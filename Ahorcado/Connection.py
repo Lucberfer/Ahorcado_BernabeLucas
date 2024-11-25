@@ -28,7 +28,7 @@ class DatabaseConnection:
         try:
             cursor = self.connection.cursor()
 
-            cursor.executescript(""""
+            cursor.executescript("""
                 CREATE TABLE IF NOT EXISTS USER (
                     id_user INTEGER PRIMARY KEY AUTOINCREMENT,
                     name VARCHAR(60) NOT NULL UNIQUE,
@@ -69,7 +69,7 @@ class DatabaseConnection:
             # Insert words for the FRUIT category
             cursor.execute("SELECT COUNT(*) FROM FRUIT")
             if cursor.fetchone()[0] == 0:
-                cursor.executescript(""""
+                cursor.executescript("""
                     INSERT INTO THEME (text) VALUES
                         ('manzana'), ('platano'), ('uva'), ('mango'), ('kiwi'), 
                         ('naranja'), ('pera'), ('fresa'), ('melocoton'), ('granada');
@@ -85,7 +85,7 @@ class DatabaseConnection:
             #Insert words for the IT category
             cursor.execute("SELECT COUNT(*) FROM IT")
             if cursor.fetchone()[0] == 0:
-                cursor.executescript(""""
+                cursor.executescript("""
                     INSERT INTO THEME (text) VALUES
                         ('python'), ('java'), ('android'), ('debugging'), ('servidor'), 
                         ('mysql'), ('encriptacion'), ('cyberseguridad'), ('frontend'), ('backend');
@@ -101,7 +101,7 @@ class DatabaseConnection:
             # Insert words for the NAME category
             cursor.execute("SELECT COUNT(*) FROM NAME")
             if cursor.fetchone()[0] == 0:
-                cursor.executescript(""""
+                cursor.executescript("""
                     INSERT INTO THEME (text) VALUES
                         ('figaro'), ('marta'), ('lucas'), ('elena'), ('rafael'), 
                         ('florencia'), ('mercedes'), ('sandra'), ('veronica'), ('sandalio');
@@ -117,7 +117,7 @@ class DatabaseConnection:
             # Insert images in IMAGES table
             cursor.execute("SELECT COUNT(*) FROM IMAGES")
             if cursor.fetchone()[0] == 0:
-                cursor.executescript(""""
+                cursor.executescript("""
                     INSERT INTO IMAGES (URL) VALUES
                         ('Resources/img1.png'), ('Resources/img1.png'), ('Resources/img1.png'), 
                         ('Resources/img1.png'), ('Resources/img1.png'), ('Resources/img1.png'), 
