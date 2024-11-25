@@ -37,7 +37,7 @@ class DatabaseConnection:
                 );
                 
                 CREATE TABLE IF NOT EXISTS THEME (
-                    id_word INTEGUER PRIMARY KEY AUTOINCREMENT,
+                    id_word INTEGER PRIMARY KEY AUTOINCREMENT,
                     text TEXT NOT NULL
                 );
                 
@@ -75,11 +75,11 @@ class DatabaseConnection:
                         ('naranja'), ('pera'), ('fresa'), ('melocoton'), ('granada');
                         
                     INSERT INTO FRUIT (id_word)
-                        VALUES ((SELECCT id_word FROM THEME WHERE text = 'manzana')), ((SELECCT id_word FROM THEME WHERE text = 'platano')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'uva')), ((SELECCT id_word FROM THEME WHERE text = 'mango')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'kiwi')), ((SELECCT id_word FROM THEME WHERE text = 'naranja')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'pera')), ((SELECCT id_word FROM THEME WHERE text = 'fresa')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'melocoton')), ((SELECCT id_word FROM THEME WHERE text = 'granada'));                
+                        VALUES ((SELECT id_word FROM THEME WHERE text = 'manzana')), ((SELECT id_word FROM THEME WHERE text = 'platano')),
+                               ((SELECT id_word FROM THEME WHERE text = 'uva')), ((SELECT id_word FROM THEME WHERE text = 'mango')),
+                               ((SELECT id_word FROM THEME WHERE text = 'kiwi')), ((SELECT id_word FROM THEME WHERE text = 'naranja')),
+                               ((SELECT id_word FROM THEME WHERE text = 'pera')), ((SELECT id_word FROM THEME WHERE text = 'fresa')),
+                               ((SELECT id_word FROM THEME WHERE text = 'melocoton')), ((SELECT id_word FROM THEME WHERE text = 'granada'));                
                 """)
 
             #Insert words for the IT category
@@ -91,11 +91,11 @@ class DatabaseConnection:
                         ('mysql'), ('encriptacion'), ('cyberseguridad'), ('frontend'), ('backend');
 
                     INSERT INTO FRUIT (id_word)
-                        VALUES ((SELECCT id_word FROM THEME WHERE text = 'python')), ((SELECCT id_word FROM THEME WHERE text = 'java')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'android')), ((SELECCT id_word FROM THEME WHERE text = 'debugging')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'servidor')), ((SELECCT id_word FROM THEME WHERE text = 'mysql')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'encriptacion')), ((SELECCT id_word FROM THEME WHERE text = 'cyberseguridad')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'frontend')), ((SELECCT id_word FROM THEME WHERE text = 'backend'));                
+                        VALUES ((SELECT id_word FROM THEME WHERE text = 'python')), ((SELECT id_word FROM THEME WHERE text = 'java')),
+                               ((SELECT id_word FROM THEME WHERE text = 'android')), ((SELECT id_word FROM THEME WHERE text = 'debugging')),
+                               ((SELECT id_word FROM THEME WHERE text = 'servidor')), ((SELECT id_word FROM THEME WHERE text = 'mysql')),
+                               ((SELECT id_word FROM THEME WHERE text = 'encriptacion')), ((SELECT id_word FROM THEME WHERE text = 'cyberseguridad')),
+                               ((SELECT id_word FROM THEME WHERE text = 'frontend')), ((SELECT id_word FROM THEME WHERE text = 'backend'));                
                 """)
 
             # Insert words for the NAME category
@@ -107,11 +107,11 @@ class DatabaseConnection:
                         ('florencia'), ('mercedes'), ('sandra'), ('veronica'), ('sandalio');
                         
                     INSERT INTO FRUIT (id_word)
-                        VALUES ((SELECCT id_word FROM THEME WHERE text = 'figaro')), ((SELECCT id_word FROM THEME WHERE text = 'marta')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'lucas')), ((SELECCT id_word FROM THEME WHERE text = 'elena')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'rafael')), ((SELECCT id_word FROM THEME WHERE text = 'florencia')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'mercedes')), ((SELECCT id_word FROM THEME WHERE text = 'sandra')),
-                               ((SELECCT id_word FROM THEME WHERE text = 'veronica')), ((SELECCT id_word FROM THEME WHERE text = 'sandalio'));                
+                        VALUES ((SELECT id_word FROM THEME WHERE text = 'figaro')), ((SELECT id_word FROM THEME WHERE text = 'marta')),
+                               ((SELECT id_word FROM THEME WHERE text = 'lucas')), ((SELECT id_word FROM THEME WHERE text = 'elena')),
+                               ((SELECT id_word FROM THEME WHERE text = 'rafael')), ((SELECT id_word FROM THEME WHERE text = 'florencia')),
+                               ((SELECT id_word FROM THEME WHERE text = 'mercedes')), ((SELECT id_word FROM THEME WHERE text = 'sandra')),
+                               ((SELECT id_word FROM THEME WHERE text = 'veronica')), ((SELECT id_word FROM THEME WHERE text = 'sandalio'));                
                 """)
 
             # Insert images in IMAGES table
