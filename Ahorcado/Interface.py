@@ -1,74 +1,142 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from Ahorcado.Logic import HangmanGame
+
 
 class HangmanInterface:
     def __init__(self, root, game):
         self.root = root
         self.game = game
 
+        # Set fixed size for the window
+        self.root.geometry("600x600")
+        self.root.resizable(False, False)
+
+        # Center the window on the screen
+        self.centerWindow(600, 600)
+
+        # Set dark gray background color
+        self.root.configure(bg="#2E2E2E")  # Dark gray
+
         self.root.title("EL AHORCADO")
-        self.labelWord = tk.Label(root, text="Palabra: ___", font=("Helvetica", 16))
+
+        # Player name input
+        self.labelName = tk.Label(root, text="Introduzca su nombre:", font=("Helvetica", 12), bg="#2E2E2E", fg="white")
+        self.labelName.pack()
+        self.entryName = tk.Entry(root, bg="#505050", fg="white", insertbackground="white")
+        self.entryName.pack()
+        self.buttonSetName = tk.Button(root, text="Aceptar", command=self.setPlayerName, bg="#B0B0B0", fg="black")
+        self.buttonSetName.pack()
+
+        # Category selection
+        self.labelCategory = tk.Label(root, text="Seleccione una categoría:", font=("Helvetica", 12), bg="#2E2E2E", fg="white")
+        self.labelCategory.pack()
+        self.categoryVar = tk.StringVar(root)
+        self.categoryVar.set("Seleccione")  # Default value
+        self.dropdownCategory = tk.OptionMenu(root, self.categoryVar, "FRUIT", "NAME", "IT")
+        self.dropdownCategory.config(bg="#505050", fg="white")
+        self.dropdownCategory.pack()
+        self.buttonSetCategory = tk.Button(root, text="Elegir Categoría", command=self.setCategory, state=tk.DISABLED, bg="#B0B0B0", fg="black")
+        self.buttonSetCategory.pack()
+
+        # Word display
+        self.labelWord = tk.Label(root, text="Palabra: ", font=("Helvetica", 16), bg="#2E2E2E", fg="white")
         self.labelWord.pack()
 
-        # Ajustar el tamaño del lienzo para adaptarse al tamaño razonable de las imágenes
-        self.canvas = tk.Canvas(root, width=300, height=300)
+        # Hangman image canvas
+        self.canvas = tk.Canvas(root, width=300, height=300, bg="#2E2E2E", highlightthickness=0)
         self.canvas.pack()
 
-        # Campo de entrada para que el usuario ingrese una letra
-        self.entryLetter = tk.Entry(root)
+        # Letter input
+        self.entryLetter = tk.Entry(root, state=tk.DISABLED, bg="#505050", fg="white", insertbackground="white")
         self.entryLetter.pack()
-
-        # Botón para adivinar una letra
-        self.buttonGuess = tk.Button(root, text="ADIVINAR", command=self.guessLetterHandler)  # Cambié guessLetter a guessLetterHandler
+        self.buttonGuess = tk.Button(root, text="ADIVINA", state=tk.DISABLED, command=self.guessLetterHandler, bg="#B0B0B0", fg="black")
         self.buttonGuess.pack()
 
-        # Etiqueta para mostrar el estado del juego
-        self.labelStatus = tk.Label(root, text="Introduzca la letra:")
+        # Status label
+        self.labelStatus = tk.Label(root, text="Introduce una letra:", font=("Helvetica", 12), bg="#2E2E2E", fg="white")
         self.labelStatus.pack()
 
-    def updateImage(self):
-        """Actualiza la imagen del ahorcado según la cantidad de intentos fallidos"""
-        imagePath = self.game.getCurrentImage()
+    def centerWindow(self, width, height):
+        """Center the window on the screen."""
+        screenWidth = self.root.winfo_screenwidth()
+        screenHeight = self.root.winfo_screenheight()
+        xCoordinate = (screenWidth // 2) - (width // 2)
+        yCoordinate = (screenHeight // 2) - (height // 2)
+        self.root.geometry(f"{width}x{height}+{xCoordinate}+{yCoordinate}")
 
+    def setPlayerName(self):
+        """Set the player's name and initialize the game."""
+        playerName = self.entryName.get().strip()
+        if playerName:
+            self.game.addUser(playerName)
+            self.entryName.config(state=tk.DISABLED)
+            self.buttonSetName.config(state=tk.DISABLED)
+            self.buttonSetCategory.config(state=tk.NORMAL)
+            self.labelStatus.config(text=f"Hola, {playerName}! Selecciona una categoría para empezar a jugar.")
+        else:
+            self.labelStatus.config(text="Introduce un nombre válido.")
+
+    def setCategory(self):
+        """Set the category for the game and initialize the word to guess."""
+        category = self.categoryVar.get()
+        if category != "Seleccione":
+            if self.game.chooseCategory(category):
+                self.dropdownCategory.config(state=tk.DISABLED)
+                self.buttonSetCategory.config(state=tk.DISABLED)
+                self.entryLetter.config(state=tk.NORMAL)
+                self.buttonGuess.config(state=tk.NORMAL)
+                self.labelStatus.config(text=f"Categoría seleccionada: {category}. ¡Comienza a adivinar letras!")
+                # Display initial word with underscores
+                self.labelWord.config(text=f"Palabra: {self.game.getWordDisplay()}")
+                self.updateImage()  # Ensure that the initial image (no attempts) is displayed
+            else:
+                self.labelStatus.config(text=f"No se pudo cargar la categoría: {category}")
+        else:
+            self.labelStatus.config(text="Selecciona una categoría válida.")
+
+    def updateImage(self):
+        """Update the hangman image based on the number of failed attempts."""
+        imagePath = self.game.getCurrentImage()
         if imagePath:
             try:
-                # Cargar la imagen y ajustarla al tamaño del canvas
+                # Load the image and resize it to fit the canvas
                 img = Image.open(imagePath)
-                img = img.resize((300, 300), Image.LANCZOS)  # Ajustar el tamaño de la imagen con el filtro adecuado
+                img = img.resize((300, 300), Image.LANCZOS)
                 self.imgTk = ImageTk.PhotoImage(img)
-                # Limpiar el canvas antes de mostrar la nueva imagen
+                # Clear the canvas and display the new image
                 self.canvas.delete("all")
-                self.canvas.create_image(150, 150, image=self.imgTk)  # Centrar la imagen en el canvas
+                self.canvas.create_image(150, 150, image=self.imgTk)
             except Exception as e:
                 print(f"Error cargando la imagen: {e}")
 
     def guessLetterHandler(self):
-        """Gestiona el intento de adivinar una letra"""
-        letter = self.entryLetter.get().strip().lower()
+        """Handle the attempt to guess a letter."""
+        letter = self.entryLetter.get().strip().lower()  # Ensure letter is always lowercase
         self.entryLetter.delete(0, tk.END)
 
         try:
-            # Verifica que el usuario ingrese una letra válida
+            # Verify that the user inputs a valid letter
             if not letter.isalpha() or len(letter) != 1:
-                raise ValueError("Introduce una letra válida individual")
+                raise ValueError("Introduzca una letra válida.")
 
-            # Llamar a la función de lógica para adivinar la letra
+            # Call the logic function to guess the letter
             if self.game.guessLetter(letter):
                 self.labelStatus.config(text="¡Correcto!")
             else:
                 self.labelStatus.config(text="¡Incorrecto!")
-                self.updateImage()
+                self.updateImage()  # Update image on incorrect guess
 
-            # Actualizar la palabra mostrada
+            # Update the displayed word
             self.labelWord.config(text=f"Palabra: {self.game.getWordDisplay()}")
 
-            # Verificar si el juego ha terminado
+            # Check if the game is over
             if self.game.isGameOver():
-                if '_' not in self.game.guessedLetters:
-                    self.labelStatus.config(text="¡Enhorabuena, ganaste!")
+                if "_" not in self.game.getWordDisplay():
+                    self.labelStatus.config(text="¡Ganaste!")
+                    self.game.updateGameStats(win=True)
                 else:
                     self.labelStatus.config(text=f"¡Perdiste! La palabra era: {self.game.word}")
+                    self.game.updateGameStats(win=False)
                 self.buttonGuess.config(state=tk.DISABLED)
 
         except ValueError as e:

@@ -6,7 +6,7 @@ class DatabaseConnection:
         self.connection = None
 
     def connect(self):
-        """Connection to the SQLite database"""
+        """Connect to the SQLite database."""
         try:
             self.connection = sqlite3.connect(self.dbName)
             self.connection.execute("PRAGMA foreign_keys = ON;")
@@ -15,7 +15,7 @@ class DatabaseConnection:
             print(f"Error al conectar con la base de datos: {e}")
 
     def close(self):
-        """Close the database connection"""
+        """Close the database connection."""
         try:
             if self.connection:
                 self.connection.close()
@@ -24,10 +24,11 @@ class DatabaseConnection:
             print(f"Error al cerrar la base de datos: {e}")
 
     def createTables(self):
-        """Create the database tables"""
+        """Create the database tables."""
         try:
             cursor = self.connection.cursor()
 
+            # Create tables
             cursor.executescript("""
                 CREATE TABLE IF NOT EXISTS USER (
                     id_user INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,8 +66,16 @@ class DatabaseConnection:
                 );
             """)
 
-            # Insert words into the THEME table and assign them to the categories
+            print("Tablas creadas correctamente.")
+            self.insertInitialData(cursor)
 
+        except sqlite3.Error as e:
+            print(f"Error creando las tablas o insertando datos: {e}")
+            self.connection.rollback()
+
+    def insertInitialData(self, cursor):
+        """Insert initial data into the database."""
+        try:
             # Insert words for the FRUIT category
             cursor.execute("SELECT COUNT(*) FROM FRUIT")
             if cursor.fetchone()[0] == 0:
@@ -76,11 +85,16 @@ class DatabaseConnection:
                         ('naranja'), ('pera'), ('fresa'), ('melocoton'), ('granada');
 
                     INSERT INTO FRUIT (id_word)
-                        VALUES ((SELECT id_word FROM THEME WHERE text = 'manzana')), ((SELECT id_word FROM THEME WHERE text = 'platano')),
-                               ((SELECT id_word FROM THEME WHERE text = 'uva')), ((SELECT id_word FROM THEME WHERE text = 'mango')),
-                               ((SELECT id_word FROM THEME WHERE text = 'kiwi')), ((SELECT id_word FROM THEME WHERE text = 'naranja')),
-                               ((SELECT id_word FROM THEME WHERE text = 'pera')), ((SELECT id_word FROM THEME WHERE text = 'fresa')),
-                               ((SELECT id_word FROM THEME WHERE text = 'melocoton')), ((SELECT id_word FROM THEME WHERE text = 'granada'));                
+                        VALUES ((SELECT id_word FROM THEME WHERE text = 'manzana')),
+                               ((SELECT id_word FROM THEME WHERE text = 'platano')),
+                               ((SELECT id_word FROM THEME WHERE text = 'uva')),
+                               ((SELECT id_word FROM THEME WHERE text = 'mango')),
+                               ((SELECT id_word FROM THEME WHERE text = 'kiwi')),
+                               ((SELECT id_word FROM THEME WHERE text = 'naranja')),
+                               ((SELECT id_word FROM THEME WHERE text = 'pera')),
+                               ((SELECT id_word FROM THEME WHERE text = 'fresa')),
+                               ((SELECT id_word FROM THEME WHERE text = 'melocoton')),
+                               ((SELECT id_word FROM THEME WHERE text = 'granada'));
                 """)
 
             # Insert words for the IT category
@@ -92,11 +106,16 @@ class DatabaseConnection:
                         ('mysql'), ('encriptacion'), ('cyberseguridad'), ('frontend'), ('backend');
 
                     INSERT INTO IT (id_word)
-                        VALUES ((SELECT id_word FROM THEME WHERE text = 'python')), ((SELECT id_word FROM THEME WHERE text = 'java')),
-                               ((SELECT id_word FROM THEME WHERE text = 'android')), ((SELECT id_word FROM THEME WHERE text = 'debugging')),
-                               ((SELECT id_word FROM THEME WHERE text = 'servidor')), ((SELECT id_word FROM THEME WHERE text = 'mysql')),
-                               ((SELECT id_word FROM THEME WHERE text = 'encriptacion')), ((SELECT id_word FROM THEME WHERE text = 'cyberseguridad')),
-                               ((SELECT id_word FROM THEME WHERE text = 'frontend')), ((SELECT id_word FROM THEME WHERE text = 'backend'));                
+                        VALUES ((SELECT id_word FROM THEME WHERE text = 'python')),
+                               ((SELECT id_word FROM THEME WHERE text = 'java')),
+                               ((SELECT id_word FROM THEME WHERE text = 'android')),
+                               ((SELECT id_word FROM THEME WHERE text = 'debugging')),
+                               ((SELECT id_word FROM THEME WHERE text = 'servidor')),
+                               ((SELECT id_word FROM THEME WHERE text = 'mysql')),
+                               ((SELECT id_word FROM THEME WHERE text = 'encriptacion')),
+                               ((SELECT id_word FROM THEME WHERE text = 'cyberseguridad')),
+                               ((SELECT id_word FROM THEME WHERE text = 'frontend')),
+                               ((SELECT id_word FROM THEME WHERE text = 'backend'));
                 """)
 
             # Insert words for the NAME category
@@ -105,14 +124,19 @@ class DatabaseConnection:
                 cursor.executescript("""
                     INSERT INTO THEME (text) VALUES
                         ('figaro'), ('marta'), ('lucas'), ('elena'), ('rafael'), 
-                        ('florencia'), ('mercedes'), ('sandra'), ('veronica'), ('sandalio');
+                        ('florencia'), ('angeles'), ('sandra'), ('veronica'), ('sandalio');
 
                     INSERT INTO NAME (id_word)
-                        VALUES ((SELECT id_word FROM THEME WHERE text = 'figaro')), ((SELECT id_word FROM THEME WHERE text = 'marta')),
-                               ((SELECT id_word FROM THEME WHERE text = 'lucas')), ((SELECT id_word FROM THEME WHERE text = 'elena')),
-                               ((SELECT id_word FROM THEME WHERE text = 'rafael')), ((SELECT id_word FROM THEME WHERE text = 'florencia')),
-                               ((SELECT id_word FROM THEME WHERE text = 'mercedes')), ((SELECT id_word FROM THEME WHERE text = 'sandra')),
-                               ((SELECT id_word FROM THEME WHERE text = 'veronica')), ((SELECT id_word FROM THEME WHERE text = 'sandalio'));                
+                        VALUES ((SELECT id_word FROM THEME WHERE text = 'figaro')),
+                               ((SELECT id_word FROM THEME WHERE text = 'marta')),
+                               ((SELECT id_word FROM THEME WHERE text = 'lucas')),
+                               ((SELECT id_word FROM THEME WHERE text = 'elena')),
+                               ((SELECT id_word FROM THEME WHERE text = 'rafael')),
+                               ((SELECT id_word FROM THEME WHERE text = 'florencia')),
+                               ((SELECT id_word FROM THEME WHERE text = 'angeles')),
+                               ((SELECT id_word FROM THEME WHERE text = 'sandra')),
+                               ((SELECT id_word FROM THEME WHERE text = 'veronica')),
+                               ((SELECT id_word FROM THEME WHERE text = 'sandalio'));
                 """)
 
             # Insert images in IMAGES table
@@ -122,13 +146,11 @@ class DatabaseConnection:
                     INSERT INTO IMAGES (url) VALUES
                         ('Resources/img1.png'), ('Resources/img2.png'), ('Resources/img3.png'), 
                         ('Resources/img4.png'), ('Resources/img5.png'), ('Resources/img6.png'), 
-                        ('Resources/img7.png'), ('Resources/img8.png'), ('Resources/img9.png');               
+                        ('Resources/img7.png'), ('Resources/img8.png'), ('Resources/img9.png');
                 """)
 
-            # Commit the changes
-            self.connection.commit()
-            print("Tablas creadas correctamente")
+            print("Datos iniciales insertados correctamente.")
 
         except sqlite3.Error as e:
-            print(f"Error creando las tablas o insertando datos: {e}")
-            self.connection.rollback()
+            print(f"Error al insertar datos iniciales: {e}")
+

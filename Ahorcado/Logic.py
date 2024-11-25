@@ -20,35 +20,33 @@ class HangmanGame:
         self.loadImages()
 
     def loadImages(self):
-        """Load image URLs from the database"""
+        """Load image URLs from the database in order."""
         try:
             cursor = self.db.connection.cursor()
-            cursor.execute("SELECT URL FROM IMAGES ORDER BY id_image ASC")
-            self.imagesURLs = [row[0] for row in cursor.fetchall()]
-            print(f"Images loaded: {self.imagesURLs}")
+            cursor.execute("SELECT url FROM IMAGES ORDER BY id_image ASC")
+            self.imageURLs = [row[0] for row in cursor.fetchall()]
+            print(f"Imágenes cargadas: {self.imageURLs}")
         except sqlite3.Error as e:
-            print(f"Error loading images: {e}")
+            print(f"Error cargando las imágenes: {e}")
 
     def addUser(self, userName):
-        """Add a new user to the database or load an existing one"""
+        """Add a new user or load an existing one"""
         conn = self.db.connection
-
         try:
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
             cursor.execute("SELECT id_user FROM USER WHERE name = ?", (userName,))
             user = cursor.fetchone()
 
             if user:
                 self.currentUser = user[0]
-                print(f"Player {userName} loaded.")
+                print(f"Jugador {userName} cargado.")
             else:
                 cursor.execute("INSERT INTO USER (name) VALUES (?)", (userName,))
-                conn.commit()
+                self.db.connection.commit()
                 self.currentUser = cursor.lastrowid
-                print(f"Player {userName} registered.")
+                print(f"Jugador {userName} registrado.")
         except sqlite3.Error as e:
-            print(f"Error adding player: {e}")
-            conn.rollback()
+            print(f"Error al añadir al jugador: {e}")
 
     def updateGameStats(self, win):
         """Update the current user's game Win/Loss stats"""
@@ -62,45 +60,42 @@ class HangmanGame:
                 cursor.execute("UPDATE USER SET loss = loss + 1 WHERE id_user = ?", (self.currentUser,))
             conn.commit()
         except sqlite3.Error as e:
-            print(f"Error updating statistics: {e}")
+            print(f"Error actualizando las estadisticas: {e}")
             conn.rollback()
 
     def chooseCategory(self, category):
-        """Choose a category and randomly select a word from the database"""
+        """Choose a category and randomly select a word from the database."""
         self.category = category
-        conn = self.db.connection
-
         try:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT t.text FROM THEME t JOIN {} c ON t.id_word = c.id_word""".format(category.upper()))
+            cursor = self.db.connection.cursor()
+            cursor.execute(f"SELECT t.text FROM THEME t JOIN {category.upper()} c ON t.id_word = c.id_word")
             words = cursor.fetchall()
 
             if not words:
-                print(f"No words found for category: {category}")
+                print(f"No hay palabras en la categoría: {category}")
                 return False
 
-            # Choose a random word from the list of words
+            # Choose a random word
             self.word = random.choice(words)[0]
-            self.guessedLetters = ['_'] * len(self.word)
+            self.guessedLetters = ["_"] * len(self.word)  # Initialize with underscores
             self.incorrectLetters = []
             self.attempts = 0
             return True
 
         except sqlite3.Error as e:
-            print(f"Error retrieving words for the category: {e}")
+            print(f"Error al seleccionar la palabra: {e}")
             return False
 
     def guessLetter(self, letter):
-        """Process the guessed letter and update the game state"""
+        """Process the guessed letter and update the game state."""
         letter = letter.lower()
 
         # Check if the letter has already been guessed
         if letter in self.guessedLetters or letter in self.incorrectLetters:
-            print("Letter already guessed.")
+            print("Letra ya usada.")
             return False
 
-        # If the letter is in the word, reveal it in the correct positions
+        # If the letter is in the word, add it to guessedLetters
         if letter in self.word:
             for i, l in enumerate(self.word):
                 if l == letter:
@@ -114,17 +109,17 @@ class HangmanGame:
 
     def getCurrentImage(self):
         """Get the current image URL based on the number of failed attempts"""
-        if self.attempts < len(self.imagesURLs):
-            return self.imagesURLs[self.attempts]
+        if self.attempts < len(self.imageURLs):
+            return self.imageURLs[self.attempts]
         return None
 
     def isGameOver(self):
-        """Check if the game is over"""
-        return self.attempts >= self.maxAttempts or "_" not in self.guessedLetters
+        """Check if the game is over."""
+        return "_" not in self.getWordDisplay() or self.attempts >= self.maxAttempts
 
     def getWordDisplay(self):
-        """Get the current state of the guessed word"""
-        return " ".join(self.guessedLetters)
+        """Return the current state of the word with guessed letters revealed."""
+        return " ".join([letter if letter in self.guessedLetters else "_" for letter in self.word])
 
     def resetGame(self):
         """Reset the game state"""
