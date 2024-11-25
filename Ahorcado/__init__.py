@@ -15,4 +15,4 @@ if __name__ == "__main__":
         # Start
         root.mainloop()
     except Exception as e:
-        print(f"Error inesperad mientras se inicia el juego: {e}")
+        print(f"Error inesperado mientras se inicia el juego: {e}")

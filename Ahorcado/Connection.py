@@ -1,18 +1,18 @@
 import sqlite3
 
 class DatabaseConnection:
-    def __init__(self, dbName= "HangmanDB.db"):
+    def __init__(self, dbName="HangmanDB.db"):
         self.dbName = dbName
         self.connection = None
 
     def connect(self):
-        """Connection to de SQLite database"""
+        """Connection to the SQLite database"""
         try:
             self.connection = sqlite3.connect(self.dbName)
             self.connection.execute("PRAGMA foreign_keys = ON;")
             print("Conexión a la base de datos realizada")
         except sqlite3.Error as e:
-            print(f"Error al conectar con la base de datos {e}")
+            print(f"Error al conectar con la base de datos: {e}")
 
     def close(self):
         """Close the database connection"""
@@ -21,10 +21,10 @@ class DatabaseConnection:
                 self.connection.close()
                 print("Conexión a la base de datos cerrada")
         except sqlite3.Error as e:
-            print(f"Error al cerrar la base de datos {e}")
+            print(f"Error al cerrar la base de datos: {e}")
 
-    def creteTables(self):
-        """"Create the database tables"""
+    def createTables(self):
+        """Create the database tables"""
         try:
             cursor = self.connection.cursor()
 
@@ -35,35 +35,36 @@ class DatabaseConnection:
                     win INTEGER DEFAULT 0,
                     loss INTEGER DEFAULT 0
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS THEME (
                     id_word INTEGER PRIMARY KEY AUTOINCREMENT,
                     text TEXT NOT NULL
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS FRUIT (
                     id_fruit INTEGER PRIMARY KEY AUTOINCREMENT,
                     id_word INTEGER NOT NULL,
-                    FOREIGN KEY (id_word) REFERENCES THEME (id_word) ON DELETE CASCADE  
-                ):
-                
+                    FOREIGN KEY (id_word) REFERENCES THEME (id_word) ON DELETE CASCADE
+                );
+
                 CREATE TABLE IF NOT EXISTS IT (
                     id_tech INTEGER PRIMARY KEY AUTOINCREMENT,
                     id_word INTEGER NOT NULL,
                     FOREIGN KEY (id_word) REFERENCES THEME (id_word) ON DELETE CASCADE
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS NAME (
                     id_name INTEGER PRIMARY KEY AUTOINCREMENT,
                     id_word INTEGER NOT NULL,
                     FOREIGN KEY (id_word) REFERENCES THEME (id_word) ON DELETE CASCADE
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS IMAGES (
                     id_image INTEGER PRIMARY KEY AUTOINCREMENT,
-                    url VARCHAR(30) NOT NULL
+                    url VARCHAR(60) NOT NULL
                 );
             """)
+
             # Insert words into the THEME table and assign them to the categories
 
             # Insert words for the FRUIT category
@@ -73,7 +74,7 @@ class DatabaseConnection:
                     INSERT INTO THEME (text) VALUES
                         ('manzana'), ('platano'), ('uva'), ('mango'), ('kiwi'), 
                         ('naranja'), ('pera'), ('fresa'), ('melocoton'), ('granada');
-                        
+
                     INSERT INTO FRUIT (id_word)
                         VALUES ((SELECT id_word FROM THEME WHERE text = 'manzana')), ((SELECT id_word FROM THEME WHERE text = 'platano')),
                                ((SELECT id_word FROM THEME WHERE text = 'uva')), ((SELECT id_word FROM THEME WHERE text = 'mango')),
@@ -82,7 +83,7 @@ class DatabaseConnection:
                                ((SELECT id_word FROM THEME WHERE text = 'melocoton')), ((SELECT id_word FROM THEME WHERE text = 'granada'));                
                 """)
 
-            #Insert words for the IT category
+            # Insert words for the IT category
             cursor.execute("SELECT COUNT(*) FROM IT")
             if cursor.fetchone()[0] == 0:
                 cursor.executescript("""
@@ -90,7 +91,7 @@ class DatabaseConnection:
                         ('python'), ('java'), ('android'), ('debugging'), ('servidor'), 
                         ('mysql'), ('encriptacion'), ('cyberseguridad'), ('frontend'), ('backend');
 
-                    INSERT INTO FRUIT (id_word)
+                    INSERT INTO IT (id_word)
                         VALUES ((SELECT id_word FROM THEME WHERE text = 'python')), ((SELECT id_word FROM THEME WHERE text = 'java')),
                                ((SELECT id_word FROM THEME WHERE text = 'android')), ((SELECT id_word FROM THEME WHERE text = 'debugging')),
                                ((SELECT id_word FROM THEME WHERE text = 'servidor')), ((SELECT id_word FROM THEME WHERE text = 'mysql')),
@@ -105,8 +106,8 @@ class DatabaseConnection:
                     INSERT INTO THEME (text) VALUES
                         ('figaro'), ('marta'), ('lucas'), ('elena'), ('rafael'), 
                         ('florencia'), ('mercedes'), ('sandra'), ('veronica'), ('sandalio');
-                        
-                    INSERT INTO FRUIT (id_word)
+
+                    INSERT INTO NAME (id_word)
                         VALUES ((SELECT id_word FROM THEME WHERE text = 'figaro')), ((SELECT id_word FROM THEME WHERE text = 'marta')),
                                ((SELECT id_word FROM THEME WHERE text = 'lucas')), ((SELECT id_word FROM THEME WHERE text = 'elena')),
                                ((SELECT id_word FROM THEME WHERE text = 'rafael')), ((SELECT id_word FROM THEME WHERE text = 'florencia')),
@@ -118,10 +119,10 @@ class DatabaseConnection:
             cursor.execute("SELECT COUNT(*) FROM IMAGES")
             if cursor.fetchone()[0] == 0:
                 cursor.executescript("""
-                    INSERT INTO IMAGES (URL) VALUES
-                        ('Resources/img1.png'), ('Resources/img1.png'), ('Resources/img1.png'), 
-                        ('Resources/img1.png'), ('Resources/img1.png'), ('Resources/img1.png'), 
-                        ('Resources/img1.png'), ('Resources/img1.png'), ('Resources/img1.png');               
+                    INSERT INTO IMAGES (url) VALUES
+                        ('Resources/img1.png'), ('Resources/img2.png'), ('Resources/img3.png'), 
+                        ('Resources/img4.png'), ('Resources/img5.png'), ('Resources/img6.png'), 
+                        ('Resources/img7.png'), ('Resources/img8.png'), ('Resources/img9.png');               
                 """)
 
             # Commit the changes
@@ -129,5 +130,5 @@ class DatabaseConnection:
             print("Tablas creadas correctamente")
 
         except sqlite3.Error as e:
-            print("Error creando las tablas o insertando datos {e}")
+            print(f"Error creando las tablas o insertando datos: {e}")
             self.connection.rollback()
