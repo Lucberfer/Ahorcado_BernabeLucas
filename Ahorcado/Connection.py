@@ -33,7 +33,7 @@ class DatabaseConnection:
                     id_user INTEGER PRIMARY KEY AUTOINCREMENT,
                     name VARCHAR(60) NOT NULL UNIQUE,
                     win INTEGER DEFAULT 0,
-                    lost INTEGER DEFAULT 0
+                    loss INTEGER DEFAULT 0
                 );
                 
                 CREATE TABLE IF NOT EXISTS THEME (
