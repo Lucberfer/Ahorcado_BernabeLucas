@@ -20,7 +20,7 @@ class HangmanInterface:
         self.root.title("EL AHORCADO")
 
         # Player name input
-        self.labelName = tk.Label(root, text="Introduzca su nombre:", font=("Helvetica", 12), bg="#2E2E2E", fg="white")
+        self.labelName = tk.Label(root, text="Introduzca su nombre:", font=("Helvetica", 12))
         self.labelName.pack()
         self.entryName = tk.Entry(root, bg="#505050", fg="white", insertbackground="white")
         self.entryName.pack()
@@ -49,7 +49,7 @@ class HangmanInterface:
         # Letter input
         self.entryLetter = tk.Entry(root, state=tk.DISABLED, bg="#505050", fg="white", insertbackground="white")
         self.entryLetter.pack()
-        self.buttonGuess = tk.Button(root, text="ADIVINA", state=tk.DISABLED, command=self.guessLetterHandler, bg="#B0B0B0", fg="black")
+        self.buttonGuess = tk.Button(root, text="ADIVINA", state=tk.DISABLED, command=self.guessLetterHandler, bg="#B0B0B0", fg="black")  # Changed fg to black
         self.buttonGuess.pack()
 
         # Status label
